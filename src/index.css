@@ -1,0 +1,213 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* Brand palette: #603d1f, #734c25, #f1f0ec, #ffffff */
+    --background: 48 15% 94%;
+    --foreground: 27 51% 25%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 27 51% 25%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 27 51% 25%;
+
+    /* Primary CTA (lighter brown) */
+    --primary: 30 51% 30%;
+    --primary-foreground: 0 0% 100%;
+
+    /* Soft off-white secondary */
+    --secondary: 48 15% 94%;
+    --secondary-foreground: 27 40% 22%;
+
+    --muted: 48 12% 90%;
+    --muted-foreground: 27 25% 35%;
+
+    /* Accent uses darker brown */
+    --accent: 27 51% 25%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 65% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 48 10% 86%;
+    --input: 48 10% 90%;
+    --ring: 30 51% 30%;
+
+    --radius: 0.75rem;
+
+    /* Sidebar */
+    --sidebar-background: 48 15% 94%;
+    --sidebar-foreground: 27 51% 25%;
+    --sidebar-primary: 30 51% 30%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 48 12% 90%;
+    --sidebar-accent-foreground: 27 40% 22%;
+    --sidebar-border: 48 10% 86%;
+    --sidebar-ring: 30 55% 40%;
+  }
+
+  .dark {
+    --background: 27 25% 10%;
+    --foreground: 48 25% 96%;
+
+    --card: 27 25% 12%;
+    --card-foreground: 48 25% 96%;
+
+    --popover: 27 25% 12%;
+    --popover-foreground: 48 25% 96%;
+
+    --primary: 30 55% 50%;
+    --primary-foreground: 27 35% 12%;
+
+    --secondary: 27 20% 18%;
+    --secondary-foreground: 48 25% 96%;
+
+    --muted: 27 18% 20%;
+    --muted-foreground: 48 15% 75%;
+
+    --accent: 27 30% 24%;
+    --accent-foreground: 48 25% 96%;
+
+    --destructive: 0 62% 40%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 27 18% 22%;
+    --input: 27 18% 22%;
+    --ring: 30 55% 50%;
+    --sidebar-background: 27 20% 12%;
+    --sidebar-foreground: 48 25% 95%;
+    --sidebar-primary: 30 60% 52%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 27 22% 18%;
+    --sidebar-accent-foreground: 48 25% 95%;
+    --sidebar-border: 27 22% 18%;
+    --sidebar-ring: 30 60% 52%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Smooth scrolling for the entire page */
+  html {
+    scroll-behavior: smooth;
+  }
+
+  /* Custom scrollbar styling */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground));
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--foreground));
+  }
+
+  /* Enhanced focus states for better accessibility */
+  *:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+
+  /* Smooth transitions for all interactive elements */
+  button, a, input, textarea, select {
+    transition: all 0.2s ease-in-out;
+  }
+}
+
+@layer utilities {
+  /* Custom animation utilities */
+  .animate-fade-in-up {
+    animation: fadeInUp 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in-left {
+    animation: fadeInLeft 0.6s ease-out forwards;
+  }
+
+  .animate-fade-in-right {
+    animation: fadeInRight 0.6s ease-out forwards;
+  }
+
+  .animate-scale-in {
+    animation: scaleIn 0.4s ease-out forwards;
+  }
+
+  /* Animation keyframes */
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @keyframes fadeInLeft {
+    from {
+      opacity: 0;
+      transform: translateX(-30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes fadeInRight {
+    from {
+      opacity: 0;
+      transform: translateX(30px);
+    }
+    to {
+      opacity: 1;
+      transform: translateX(0);
+    }
+  }
+
+  @keyframes scaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  /* Staggered animation delays */
+  .delay-100 { animation-delay: 100ms; }
+  .delay-200 { animation-delay: 200ms; }
+  .delay-300 { animation-delay: 300ms; }
+  .delay-400 { animation-delay: 400ms; }
+  .delay-500 { animation-delay: 500ms; }
+  .delay-600 { animation-delay: 600ms; }
+  .delay-700 { animation-delay: 700ms; }
+  .delay-800 { animation-delay: 800ms; }
+  .delay-900 { animation-delay: 900ms; }
+  .delay-1000 { animation-delay: 1000ms; }
+}

@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Google Sheets Connection</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        button {
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+        }
+        button:hover { background-color: #0056b3; }
+        pre {
+            background-color: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>🧪 Google Sheets Connection Test</h1>
+    
+    <div class="test-section">
+        <h2>Configuration</h2>
+        <p><strong>API URL:</strong> <span id="apiUrl">Loading...</span></p>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 1: Fetch Thoughts (GET Request)</h2>
+        <button onclick="testFetch()">Test Fetch</button>
+        <div id="fetchResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Test 2: Save Thought (POST Request)</h2>
+        <input type="text" id="testName" placeholder="Test Name" value="Test User">
+        <input type="text" id="testMessage" placeholder="Test Message" value="This is a test thought">
+        <button onclick="testSave()">Test Save</button>
+        <div id="saveResult"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>Instructions</h2>
+        <ol>
+            <li>Make sure your Google Sheet has columns: <code>timestamp</code>, <code>name</code>, <code>message</code></li>
+            <li>Your Apps Script must be deployed as Web App with "Anyone" access</li>
+            <li>The URL must end with <code>/exec</code> (not <code>/dev</code>)</li>
+            <li>Click "Test Fetch" to check if you can read from the sheet</li>
+            <li>Click "Test Save" to check if you can write to the sheet</li>
+        </ol>
+    </div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbxRvd1w6hldUpwn4PzxyaAmyt6WrexsqzLJmhBDhxQEvkUyEiZWrXZ9az0wk77ewWw0/exec';
+        
+        document.getElementById('apiUrl').textContent = API_URL;
+
+        async function testFetch() {
+            const resultDiv = document.getElementById('fetchResult');
+            resultDiv.innerHTML = '<p>⏳ Testing...</p>';
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'GET',
+                    redirect: 'follow'
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Success!</h3>
+                            <p>Found ${data.data.length} thoughts</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Error</h3>
+                            <p>${data.error || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Fetch Failed</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p><strong>Possible causes:</strong></p>
+                        <ul>
+                            <li>CORS not configured (deployment not set to "Anyone")</li>
+                            <li>Wrong URL (should end with /exec)</li>
+                            <li>Script not deployed</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+
+        async function testSave() {
+            const resultDiv = document.getElementById('saveResult');
+            const name = document.getElementById('testName').value;
+            const message = document.getElementById('testMessage').value;
+            
+            resultDiv.innerHTML = '<p>⏳ Testing...</p>';
+            
+            try {
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    redirect: 'follow',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ name, message })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Success!</h3>
+                            <p>${data.message}</p>
+                            <p>Check your Google Sheet to verify the data was added!</p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h3>❌ Error</h3>
+                            <p>${data.error || 'Unknown error'}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Save Failed</h3>
+                        <p><strong>Error:</strong> ${error.message}</p>
+                        <p><strong>Possible causes:</strong></p>
+                        <ul>
+                            <li>CORS not configured (deployment not set to "Anyone")</li>
+                            <li>Wrong URL (should end with /exec)</li>
+                            <li>Script error (check Apps Script execution logs)</li>
+                        </ul>
+                    </div>
+                `;
+            }
+        }
+    </script>
+</body>
+</html>

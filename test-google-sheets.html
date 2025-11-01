@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test Google Sheets Storage</title>
+    <style>
+        body { font-family: Arial, sans-serif; max-width: 600px; margin: 50px auto; padding: 20px; }
+        .result { margin: 20px 0; padding: 15px; border-radius: 5px; }
+        .success { background-color: #d4edda; border: 1px solid #c3e6cb; }
+        .error { background-color: #f8d7da; border: 1px solid #f5c6cb; }
+        button { padding: 10px 20px; margin: 10px 0; cursor: pointer; }
+        input, textarea { width: 100%; padding: 8px; margin: 5px 0; }
+    </style>
+</head>
+<body>
+    <h1>🧪 Test Google Sheets Storage</h1>
+    
+    <div>
+        <h3>1. Test GET Request</h3>
+        <button onclick="testGet()">Test GET</button>
+        <div id="getResult"></div>
+    </div>
+
+    <div>
+        <h3>2. Test POST Request (Form Submission)</h3>
+        <form id="testForm">
+            <input type="text" name="name" placeholder="Your Name" value="Test User">
+            <textarea name="message" placeholder="Your Message" rows="3">This is a test message from the HTML form</textarea>
+            <button type="submit">Submit via Form</button>
+        </form>
+        <div id="formResult"></div>
+    </div>
+
+    <div>
+        <h3>3. Test POST Request (JavaScript)</h3>
+        <input type="text" id="jsName" placeholder="Your Name" value="JS Test User">
+        <textarea id="jsMessage" placeholder="Your Message" rows="3">This is a test message from JavaScript</textarea>
+        <button onclick="testPostJS()">Submit via JavaScript</button>
+        <div id="jsResult"></div>
+    </div>
+
+    <script>
+        const API_URL = 'https://script.google.com/macros/s/AKfycbyJRwzAtEm9ChZ4ckvZyEc2QCTEYWY4igfLo-j7obOGAPnnIFha2-mOPsuORdxFNor-/exec';
+
+        async function testGet() {
+            const resultDiv = document.getElementById('getResult');
+            resultDiv.innerHTML = '<p>⏳ Testing GET...</p>';
+            
+            try {
+                const response = await fetch(API_URL);
+                const data = await response.json();
+                
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ GET Success!</h4>
+                        <pre>${JSON.stringify(data, null, 2)}</pre>
+                    </div>
+                `;
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ GET Failed</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        async function testPostJS() {
+            const resultDiv = document.getElementById('jsResult');
+            const name = document.getElementById('jsName').value;
+            const message = document.getElementById('jsMessage').value;
+            
+            resultDiv.innerHTML = '<p>⏳ Testing POST...</p>';
+            
+            try {
+                const formData = new URLSearchParams();
+                formData.append('name', name);
+                formData.append('message', message);
+
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h4>✅ POST Success!</h4>
+                            <p>${data.message}</p>
+                            <pre>${JSON.stringify(data, null, 2)}</pre>
+                            <p><strong>Check your Google Sheet now!</strong></p>
+                        </div>
+                    `;
+                } else {
+                    resultDiv.innerHTML = `
+                        <div class="error">
+                            <h4>❌ POST Failed</h4>
+                            <p>${data.error}</p>
+                        </div>
+                    `;
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h4>❌ POST Failed</h4>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            }
+        }
+
+        // Handle form submission
+        document.getElementById('testForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const resultDiv = document.getElementById('formResult');
+            
+            // Create hidden iframe for form submission
+            const iframe = document.createElement('iframe');
+            iframe.style.display = 'none';
+            iframe.name = 'hidden_iframe';
+            document.body.appendChild(iframe);
+
+            // Set form target to iframe
+            this.target = 'hidden_iframe';
+            this.action = API_URL;
+            this.method = 'POST';
+
+            resultDiv.innerHTML = '<p>⏳ Submitting form...</p>';
+
+            iframe.onload = function() {
+                resultDiv.innerHTML = `
+                    <div class="success">
+                        <h4>✅ Form Submitted!</h4>
+                        <p>Check your Google Sheet for the new entry.</p>
+                    </div>
+                `;
+                document.body.removeChild(iframe);
+            };
+
+            // Submit the form
+            this.submit();
+        });
+    </script>
+</body>
+</html>
